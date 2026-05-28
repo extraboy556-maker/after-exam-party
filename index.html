@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>After Exam Party - Secure Ticket Portal</title>
+    <!-- Fonts & html2canvas Library -->
     <link href="https://fonts.googleapis.com/css2?family=Cabinet+Grotesk:wght@900&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
@@ -120,6 +121,298 @@
         }
 
         .detail-row:last-child { margin-bottom: 0; }
+        .detail-row strong { color: #b5b5be; }
+        .detail-row span { font-weight: 600; color: #FFF; }
+
+        .total-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-top: 15px;
+            border-top: 1px dashed rgba(255, 255, 255, 0.15);
+        }
+
+        .total-section span { color: #b5b5be; font-weight: 500; }
+        .total-section .price { font-size: 1.5rem; font-weight: 700; color: var(--accent-yellow); }
+
+        .status-screen {
+            display: none;
+            text-align: center;
+            padding: 10px 0;
+        }
+
+        .ref-input-box {
+            width: 100%;
+            padding: 14px;
+            border-radius: 12px;
+            border: 2px solid rgba(255, 199, 0, 0.3);
+            background: rgba(0, 0, 0, 0.5);
+            color: #FFFFFF;
+            font-size: 1rem;
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+        }
+
+        .ref-input-box:focus {
+            border-color: var(--accent-yellow);
+            outline: none;
+        }
+
+        .action-btn {
+            width: 100%;
+            background: var(--maroon-red);
+            color: white;
+            padding: 16px;
+            border: none;
+            border-radius: 14px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 8px 20px rgba(102, 0, 0, 0.4);
+            transition: 0.2s;
+        }
+
+        .action-btn:hover {
+            background: #800000;
+            transform: translateY(-1px);
+        }
+
+        #ticket-wrapper {
+            display: none;
+            margin-top: 25px;
+            width: 100%;
+        }
+
+        .ticket-preview {
+            background: #FFFFFF;
+            color: #000000;
+            padding: 24px;
+            border-radius: 16px;
+            position: relative;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+        }
+
+        .ticket-preview::before, .ticket-preview::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: #110d0a;
+            border-radius: 50%;
+            top: 65%;
+        }
+        .ticket-preview::before { left: -10px; }
+        .ticket-preview::after { right: -10px; }
+
+        .ticket-header {
+            text-align: center;
+            border-bottom: 2px dashed #E4E4E7;
+            padding-bottom: 12px;
+            margin-bottom: 15px;
+        }
+
+        .ticket-header h4 {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #71717A;
+        }
+
+        .ticket-header h2 {
+            font-family: 'Cabinet Grotesk', sans-serif;
+            color: #800000;
+            font-size: 1.6rem;
+            font-weight: 900;
+        }
+
+        .ticket-body {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            font-size: 0.9rem;
+            padding-bottom: 15px;
+        }
+
+        .ticket-body div { display: flex; justify-content: space-between; }
+        .ticket-body strong { color: #71717A; font-weight: 500; }
+        .ticket-body span { font-weight: 700; }
+
+        .ticket-footer {
+            padding-top: 15px;
+            border-top: 1px solid #F4F4F5;
+            text-align: center;
+        }
+
+        .pass-code {
+            font-family: monospace;
+            font-size: 1.1rem;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            background: #F4F4F5;
+            padding: 4px 12px;
+            border-radius: 6px;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+
+        .barcode-strip {
+            height: 35px;
+            background: linear-gradient(90deg, #000 2px, transparent 2px, #000 5px, transparent 5px, #000 1px, transparent 1px, #000 4px, transparent 2px, #000 2px, transparent 4px, #000 1px);
+            background-size: 30px 100%;
+            width: 80%;
+            margin: 0 auto;
+        }
+
+        .save-btn {
+            background: #00E676;
+            color: #000;
+            box-shadow: 0 8px 166px rgba(0, 230, 118, 0.2);
+            margin-top: 15px;
+        }
+        .save-btn:hover { background: #00C853; }
+    </style>
+</head>
+<body>
+
+    <div class="hero">
+        <p class="crew-title">The Happy Gang Crew Presents</p>
+        <h1>After Exam <span>Party</span></h1>
+
+        <div class="countdown" id="countdown">
+            <div class="countdown-item"><span id="days">00</span><label>Days</label></div>
+            <div class="countdown-item"><span id="hours">00</span><label>Hrs</label></div>
+            <div class="countdown-item"><span id="minutes">00</span><label>Min</label></div>
+            <div class="countdown-item"><span id="seconds">00</span><label>Sec</label></div>
+        </div>
+    </div>
+
+    <div class="container" id="interactionCard">
+        
+        <!-- STAGE 1: CHECKOUT INFO -->
+        <div id="checkout-form-stage">
+            <div class="event-details">
+                <div class="detail-row"><strong>DATE</strong><span>26th June, 2026</span></div>
+                <div class="detail-row"><strong>VENUE</strong><span>Glamossay Hotel, Sunyani</span></div>
+                <div class="detail-row"><strong>HOTLINES</strong><span>0509745978 / 0552103233</span></div>
+            </div>
+
+            <div class="total-section">
+                <span>Ticket: Advance Pass</span>
+                <div class="price">40 GH₵</div>
+            </div>
+
+            <button class="action-btn" onclick="initiatePayment()">PROCEED TO PAYMENT</button>
+        </div>
+
+        <!-- STAGE 2: REF CODE REQUIRED VERIFICATION -->
+        <div id="payment-status-stage" class="status-screen">
+            <h3 style="margin-bottom: 8px; color: var(--accent-yellow);">VERIFY YOUR PAYMENT</h3>
+            <p style="font-size: 0.85rem; color:#b5b5be; margin-bottom: 15px;">
+                Please complete your payment in the open tab. Once successful, copy your <b>Payment Reference Code</b> from the receipt and enter it here:
+            </p>
+            
+            <input type="text" id="paystackReferenceInput" class="ref-input-box" placeholder="Enter Reference Code">
+            
+            <button class="action-btn" onclick="verifyReferenceCode()">VERIFY & GENERATE PASS</button>
+        </div>
+
+        <!-- STAGE 3: TICKET REVEAL DISPLAY -->
+        <div id="ticket-wrapper">
+            <div class="ticket-preview" id="eTicket">
+                <div class="ticket-header">
+                    <h4>Official Admission Pass</h4>
+                    <h2>AFTER EXAM PARTY</h2>
+                </div>
+                <div class="ticket-body">
+                    <div><strong>Venue</strong><span>Glamossay Hotel</span></div>
+                    <div><strong>Date</strong><span>26th June, 2026</span></div>
+                    <div><strong>Admissions</strong><span>1 Person(s)</span></div>
+                    <div><strong>Paystack Ref</strong><span id="displayRef" style="color: #660000; font-family: monospace;">REF</span></div>
+                    <div><strong>Status</strong><span style="color:#00C853;">VERIFIED PASS</span></div>
+                </div>
+                <div class="ticket-footer">
+                    <span class="pass-code" id="ticket-code">AEP-000000</span>
+                    <div class="barcode-strip"></div>
+                </div>
+            </div>
+            <button class="action-btn save-btn" onclick="downloadTicketImage()">💾 Save Ticket Image to Device</button>
+        </div>
+
+    </div>
+
+    <script>
+        const paystackStoreUrl = "https://paystack.shop/pay/after-exams-party_test_177983853319_test";
+
+        function initiatePayment() {
+            document.getElementById('checkout-form-stage').style.display = 'none';
+            document.getElementById('payment-status-stage').style.display = 'block';
+            window.open(paystackStoreUrl, '_blank');
+        }
+
+        function verifyReferenceCode() {
+            const inputRef = document.getElementById('paystackReferenceInput').value.trim();
+            
+            if (inputRef === "") {
+                alert("Please enter your Paystack payment reference code to verify your pass.");
+                return;
+            }
+
+            document.getElementById('displayRef').textContent = inputRef.toUpperCase();
+            
+            const uniqueSerial = 'AEP-' + Math.floor(100000 + Math.random() * 900000);
+            document.getElementById('ticket-code').textContent = uniqueSerial;
+
+            document.getElementById('payment-status-stage').style.display = 'none';
+            document.getElementById('ticket-wrapper').style.display = 'block';
+            document.getElementById('ticket-wrapper').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function downloadTicketImage() {
+            const element = document.getElementById('eTicket');
+            const ticketID = document.getElementById('ticket-code').textContent;
+
+            html2canvas(element, {
+                scale: 3, 
+                backgroundColor: "#FFFFFF"
+            }).then(canvas => {
+                const imageURI = canvas.toDataURL('image/png');
+                const downloadAnchor = document.createElement('a');
+                downloadAnchor.href = imageURI;
+                downloadAnchor.download = `Pass-${ticketID}.png`;
+                document.body.appendChild(downloadAnchor);
+                downloadAnchor.click();
+                document.body.removeChild(downloadAnchor);
+            });
+        }
+
+        const eventTimeline = new Date("June 26, 2026 12:00:00").getTime();
+        const countdownInterval = setInterval(function() {
+            const currentMoment = new Date().getTime();
+            const timeDifference = eventTimeline - currentMoment;
+
+            const days = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((timeDifference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((timeDifference % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((timeDifference % (1000 * 60)) / 1000);
+
+            document.getElementById("days").textContent = days < 10 ? "0" + days : days;
+            document.getElementById("hours").textContent = hours < 10 ? "0" + hours : hours;
+            document.getElementById("minutes").textContent = minutes < 10 ? "0" + minutes : minutes;
+            document.getElementById("seconds").textContent = seconds < 10 ? "0" + seconds : seconds;
+
+            if (timeDifference < 0) {
+                clearInterval(countdownInterval);
+                document.getElementById("countdown").innerHTML = "<h3>EVENT STARTED</h3>";
+            }
+        }, 1000);
+    </script>
+</body>
+</html>
         .detail-row strong { color: #b5b5be; }
         .detail-row span { font-weight: 600; color: #FFF; }
 
